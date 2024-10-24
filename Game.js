@@ -32,10 +32,10 @@ var gameOver = false;
 
 // Grafik dosyalarını yüklüyoruz
 function preload() {
-    this.load.image('background', './background.png'); // Arka plan
-    this.load.image('player', './samurai.png'); // Oyuncu karakteri
-    this.load.image('trap', './trap.png'); // Tuzak
-    this.load.image('bomb', './bomb.png'); // Bomba
+    this.load.image('background', 'https://3xent123.github.io/Html5game/Background.png'); // Arka plan
+    this.load.image('player', 'https://3xent123.github.io/Html5game/Samurai.png'); // Oyuncu karakteri
+    this.load.image('trap', 'https://3xent123.github.io/Html5game/Trap.png'); // Tuzak
+    this.load.image('bomb', 'https://3xent123.github.io/Html5game/Bomb.png'); // Bomba
 }
 
 // Oyunu kuruyoruz
@@ -48,7 +48,7 @@ function create() {
     traps = this.physics.add.group();
     bombs = this.physics.add.group();
 
-    // Tuzakların rastgele düşmesi için zamanlayıcı ayarları (4 kat daha fazla düşecek)
+    // Tuzakların rastgele düşmesi için zamanlayıcı ayarları
     this.time.addEvent({
         delay: 250, // Her 0.25 saniyede bir yeni tuzak düşecek
         callback: dropTrap,
@@ -66,12 +66,9 @@ function create() {
 
     // Oyuncu karakterini ekliyoruz
     player = this.physics.add.sprite(100, 450, 'player');
-    player.setScale(0.02); // Karakterin boyutunu %0.007 oranında küçültüyoruz
+    player.setScale(0.02); // Karakterin boyutunu %0.02 oranında küçültüyoruz
     player.setBounce(0.2); // Zıpladıktan sonra sekme
     player.setCollideWorldBounds(true); // Ekran dışına çıkmasını engelle
-
-    // Klavye kontrolleri ekliyoruz
-    cursors = this.input.keyboard.createCursorKeys();
 
     // Puan metni (kalınlaştırıldı, renk siyah, font boyutu %10 küçültüldü)
     scoreText = this.add.text(16, 16, 'Skor: 0', { fontSize: '28px', fill: '#000', fontStyle: 'bold' });
@@ -94,24 +91,14 @@ function update() {
         return; // Eğer oyun bittiyse hiçbir şey yapılmasın
     }
 
-    // Karakterin sol ve sağ hareketleri (2 kat hızlandırıldı)
-    if (cursors.left.isDown) {
-        player.setVelocityX(-520); // Sol hareket
-    } else if (cursors.right.isDown) {
-        player.setVelocityX(520); // Sağ hareket
-    } else {
-        player.setVelocityX(0); // Hareket yoksa durma
+    // Mouse hareketine göre oyuncu karakterini x ekseninde hareket ettiriyoruz
+    if (this.input.activePointer.isDown) {
+        // Mouse'un x pozisyonunu alıyoruz ve karakterin x pozisyonunu mouse'un x pozisyonuna ayarlıyoruz
+        player.x = this.input.activePointer.x;
     }
 
-    // Zıplama kontrolü
-    if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-330); // Zıplama hareketi
-    }
-
-    // Tuzaklarla çarpışma kontrolü
+    // Tuzaklarla ve bombalarla çarpışma kontrolü
     this.physics.add.overlap(player, traps, hitTrap, null, this);
-
-    // Bombalarla çarpışma kontrolü
     this.physics.add.overlap(player, bombs, hitBomb, null, this);
 }
 
